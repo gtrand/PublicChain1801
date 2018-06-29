@@ -12,7 +12,7 @@ type ProofOfWork struct {
 	target *big.Int
 }
 
-const targetbit = 4
+const targetbit = 20
 
 func NewProofOfWork(block *Block) *ProofOfWork {
 	newdata := big.NewInt(1)
@@ -26,7 +26,7 @@ func (pow *ProofOfWork)run() ([]byte,int64){
 	var hashInt big.Int
 	for {
 		data := pow.prepareData(nonce)
-		fmt.Println(data)
+		//fmt.Println(data)
 		// 生成hash
 		hash = sha256.Sum256(data)
 		fmt.Printf("\r%x",hash)
@@ -43,11 +43,14 @@ func (pow *ProofOfWork)run() ([]byte,int64){
 }
 
 func (pow *ProofOfWork) prepareData(nonce int) []byte {
-	data := bytes.Join([][]byte{pow.block.Hash,
+	//fmt.Println(nonce)
+	// 生成hash
+	data := bytes.Join([][]byte{pow.block.PrevBlockHash,
 								pow.block.Data,
-								pow.block.PrevBlockHash,
-								Int2Byte(pow.block.Height),
+								Int2Byte(int64(pow.block.Height)),
 								Int2Byte(pow.block.Timestamp),
-								Int2Byte(pow.block.Nonce)},[]byte{})
+								Int2Byte(int64(targetbit)),
+								Int2Byte(int64(nonce))},[]byte{})
+	//fmt.Println(data)
 	return data
 }
